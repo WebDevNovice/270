@@ -71,6 +71,7 @@ def clean_the_data():
 
 def main():
     # clean_the_data()
+    pass
 
 if __name__ == "__main__":
     main()
