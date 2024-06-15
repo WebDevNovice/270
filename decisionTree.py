@@ -5,6 +5,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
 from sklearn import tree
 import matplotlib.pyplot as plt
+import tabulate
 
 
 def drop_columns_dt(dataframe: pd.DataFrame):
@@ -32,14 +33,33 @@ def decisionTree():
     X = df.iloc[:,:-1]
     y = df.iloc[:,-1]
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.15)
+    new_clf = DecisionTreeClassifier(max_depth=3)
+    new_clf.fit(X_train, y_train)
+    plt.figure(figsize=(20,10))
+    tree.plot_tree(new_clf, filled=True)
+    filename = f'decisiontree{i}.png'
+    plt.savefig(filename)
+    plt.close()
     clf.fit(X_train, y_train)
     test_score = clf.score(X_test, y_test)
     train_score = clf.score(X_train, y_train)
-    print(f"Test Score: {test_score}\nTrain Score: {train_score}")
-    tree.plot_tree(clf)
+    return train_score, test_score, clf
 
+total_train = 0
+total_test = 0
+table_data = [['Run','Train Acc', 'Test Acc']]
+tree_plots = []
+for i in range(1, 6):
+    train, test, clf = decisionTree()
+    total_train += train
+    total_test += test
+    table_data.append([i, train, test])
 
-decisionTree()
+avg_train = total_train / i
+avg_test = total_test / i
+print(f"Average Test Acc: {avg_test}\nAverage Train Acc: {avg_train}")
+print(tabulate.tabulate(table_data, tablefmt='fancy-grid'))
+
 
     
 
