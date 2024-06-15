@@ -35,33 +35,33 @@ def decisionTree():
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.15)
     new_clf = DecisionTreeClassifier(max_depth=3)
     new_clf.fit(X_train, y_train)
-    plt.figure(figsize=(20,10))
-    tree.plot_tree(new_clf, filled=True)
-    filename = f'decisiontree{i}.png'
-    plt.savefig(filename)
-    plt.close()
     clf.fit(X_train, y_train)
     test_score = clf.score(X_test, y_test)
     train_score = clf.score(X_train, y_train)
-    return train_score, test_score, clf
+    feature_names = list(df.columns)
+    return train_score, test_score, clf, new_clf, feature_names
 
 total_train = 0
 total_test = 0
 table_data = [['Run','Train Acc', 'Test Acc']]
 tree_plots = []
-for i in range(1, 6):
-    train, test, clf = decisionTree()
+max_train = 0
+max_test = 0
+for i in range(1, 101):
+    train, test, clf, new_clf, feature_names = decisionTree()
     total_train += train
     total_test += test
     table_data.append([i, train, test])
-
+    if train > max_train:
+        max_train = train
+    if test > max_test:
+        max_test = test
+plt.figure(figsize=(20,10))
+tree.plot_tree(new_clf, filled=True, feature_names=feature_names)
+filename = f'decisiontree{i}.png'
+plt.savefig(filename)
+plt.close()
 avg_train = total_train / i
 avg_test = total_test / i
-print(f"Average Test Acc: {avg_test}\nAverage Train Acc: {avg_train}")
-print(tabulate.tabulate(table_data, tablefmt='fancy-grid'))
-
-
-    
-
-
-
+print(f"Average Test Acc: {avg_test}\nAverage Train Acc: {avg_train}\nMax Test: {max_test}\nMax Train: {max_train}")
+print(tabulate.tabulate(table_data[1:], headers=table_data[0], tablefmt='fancy-grid'))
